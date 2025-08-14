@@ -74,9 +74,7 @@ class LowerBodyAction(ActionTerm):
 
         # Extract base command from the action tensor
         # Assuming the base command [vx, vy, wz, hip_height]
-        # TODO
-        base_command = torch.zeros_like(actions)  # Shape: [num_envs, 4]
-        base_command[:, 3] = 0.72
+        base_command = actions
 
         obs_tensor = self._env.obs_buf["lower_body_policy"]
 

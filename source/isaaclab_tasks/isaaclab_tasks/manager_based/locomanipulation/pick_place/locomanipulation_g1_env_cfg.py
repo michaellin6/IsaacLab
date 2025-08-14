@@ -13,7 +13,7 @@ import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg, AssetBaseCfg, RigidObjectCfg
 from isaaclab.devices.device_base import DevicesCfg
 from isaaclab.devices.openxr import OpenXRDeviceCfg, XrCfg
-from isaaclab.devices.openxr.retargeters.humanoid.unitree.g1_lower_body_retargeter import G1LowerBodyRetargeterCfg
+from isaaclab.devices.openxr.retargeters.humanoid.unitree.g1_lower_body_standing import G1LowerBodyStandingRetargeterCfg
 from isaaclab.devices.openxr.retargeters.humanoid.unitree.g1_upper_body_retargeter import G1UpperBodyRetargeterCfg
 from isaaclab.envs import ManagerBasedRLEnvCfg
 from isaaclab.managers import ObservationGroupCfg as ObsGroup
@@ -225,7 +225,7 @@ class LocomanipulationG1EnvCfg(ManagerBasedRLEnvCfg):
                             sim_device=self.sim.device,
                             hand_joint_names=self.actions.upper_body_ik.hand_joint_names,
                         ),
-                        G1LowerBodyRetargeterCfg(
+                        G1LowerBodyStandingRetargeterCfg(
                             sim_device=self.sim.device,
                         ),
                     ],
