@@ -93,7 +93,9 @@ class PinkInverseKinematicsAction(ActionTerm):
         self._ik_controllers = []
         for _ in range(self._env.num_envs):
             self._ik_controllers.append(
-                PinkIKController(cfg=self.cfg.controller.copy(), robot_cfg=self._env.scene.cfg.robot, device=self.device)
+                PinkIKController(
+                    cfg=self.cfg.controller.copy(), robot_cfg=self._env.scene.cfg.robot, device=self.device
+                )
             )
 
     def _initialize_hand_pose_transforms(self) -> None:
@@ -106,19 +108,17 @@ class PinkInverseKinematicsAction(ActionTerm):
         """Pre-allocate tensors and cache values for performance optimization."""
         # Cache frequently used tensor versions of joint IDs to avoid repeated creation
         self._controlled_joint_ids_tensor = torch.tensor(self._controlled_joint_ids, device=self.device)
-        
+
         # Cache base link index to avoid string lookup every time
         articulation_data = self._env.scene[self.cfg.controller.articulation_name].data
         self._base_link_idx = articulation_data.body_names.index(self.cfg.controller.base_link_name)
-        
+
         # Pre-allocate working tensors
         num_tasks = len(self._ik_controllers[0].cfg.variable_input_tasks)
         self._num_tasks = num_tasks
-        self._controlled_frame_poses = torch.zeros(
-            num_tasks, self.num_envs, 4, 4, device=self.device
-        )
-        
-        # Pre-allocate tensor for base frame computations  
+        self._controlled_frame_poses = torch.zeros(num_tasks, self.num_envs, 4, 4, device=self.device)
+
+        # Pre-allocate tensor for base frame computations
         self._base_link_frame_buffer = torch.zeros(self.num_envs, 4, 4, device=self.device)
 
     # ==================== Properties ====================
@@ -224,8 +224,12 @@ class PinkInverseKinematicsAction(ActionTerm):
         base_link_frame_in_world_origin = articulation_data.body_link_state_w[:, self._base_link_idx, :7]
 
         # Transform to environment origin frame (reuse buffer to avoid allocation)
-        torch.sub(base_link_frame_in_world_origin[:, :3], self._env.scene.env_origins, out=self._base_link_frame_buffer[:, :3, 3])
-        
+        torch.sub(
+            base_link_frame_in_world_origin[:, :3],
+            self._env.scene.env_origins,
+            out=self._base_link_frame_buffer[:, :3, 3],
+        )
+
         # Copy orientation (avoid clone)
         base_link_frame_quat = base_link_frame_in_world_origin[:, 3:7]
 
@@ -328,9 +332,7 @@ class PinkInverseKinematicsAction(ActionTerm):
             # Get gravity compensation forces using cached tensor
             if self._asset.is_fixed_base:
                 gravity = torch.zeros_like(
-                    self._asset.root_physx_view.get_gravity_compensation_forces()[
-                        :, self._controlled_joint_ids_tensor
-                    ]
+                    self._asset.root_physx_view.get_gravity_compensation_forces()[:, self._controlled_joint_ids_tensor]
                 )
             else:
                 # If floating base, then need to skip the first 6 joints (base)

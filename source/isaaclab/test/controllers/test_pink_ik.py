@@ -21,8 +21,8 @@ simulation_app = AppLauncher(headless=True).app
 import contextlib
 import gymnasium as gym
 import json
-import re
 import numpy as np
+import re
 import torch
 from pathlib import Path
 

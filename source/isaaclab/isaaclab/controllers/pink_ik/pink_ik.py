@@ -21,10 +21,10 @@ from typing import TYPE_CHECKING
 from pink import solve_ik
 
 from isaaclab.assets import ArticulationCfg
+from isaaclab.controllers.pink_kinematics_configuration import PinkKinematicsConfiguration
 from isaaclab.utils.string import resolve_matching_names_values
 
 from .null_space_posture_task import NullSpacePostureTask
-from isaaclab.controllers.pink_kinematics_configuration import PinkKinematicsConfiguration
 
 if TYPE_CHECKING:
     from .pink_ik_cfg import PinkIKControllerCfg
@@ -116,7 +116,7 @@ class PinkIKController:
         self.pink_to_isaac_lab_ordering = np.array(
             [pink_joint_names.index(isaac_lab_joint) for isaac_lab_joint in isaac_lab_joint_names]
         )
-                # Create reordering arrays for controlled joints only
+        # Create reordering arrays for controlled joints only
         pink_controlled_joint_names = self.pink_configuration.controlled_joint_names_pinocchio_order
         isaac_lab_controlled_joint_names = self.cfg.controlled_joint_names
 
