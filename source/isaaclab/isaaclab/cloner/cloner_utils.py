@@ -67,7 +67,9 @@ def clone_from_template(stage: Usd.Stage, num_clones: int, template_clone_cfg: T
         # If all prototypes map to env_0, clone whole env_0 to all envs; else clone per-object
         if torch.all(proto_idx == 0):
             # args: src_paths, dest_paths, env_ids, mask
-            replicate_args = [clone_path_fmt.format(0)], [clone_path_fmt], world_indices, clone_masking
+            # When cloning entire env_0, we use a single source so need a single-row mask
+            single_source_mask = torch.ones((1, num_clones), device=cfg.device, dtype=torch.bool)
+            replicate_args = [clone_path_fmt.format(0)], [clone_path_fmt], world_indices, single_source_mask
             get_pos = lambda path: stage.GetPrimAtPath(path).GetAttribute("xformOp:translate").Get()  # noqa: E731
             positions = torch.tensor([get_pos(clone_path_fmt.format(i)) for i in world_indices])
             if cfg.clone_physics:
